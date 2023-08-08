@@ -1,417 +1,359 @@
-#include<stdio.h>
-#include<string.h>
-#include<stdlib.h>
-#define file_size 100
-typedef struct player_information
-{
-	char player_id[10];//(primary key)
-	char name[50];
-	struct registration_date
-	{
-		int dd;
-		int mm;
-		int yyyy;
-	}registration_date;
-	char game_id[30];
-	int no_of_players;
-	int gamesplayed;
-	int gameswon;
-	int scores;
-	int prizes;
-	char game_preferences[50];
-}player_information;
-typedef struct game_master_details
-{
-	char game_id[10];//(primary key)
-	char name[50];
-	char type[20]; //(single/multiple user)
-	int no_of_players;
-}game_master_details;
-typedef struct games_played_details
-{
-	char game_id[20];//(primary key)
-	char player_id[10];
-	int score;
-	int awards;
-	int active_days;
-	int ply_count;
-	struct date_of_game_start
-	{
-		int ddstart;
-		int mmstart;
-		int yyyystart;
-	};
-	struct date_of_game_end
-	{
-		int ddend;
-		int mmend;
-		int yyyyend;	
-	};
-}games_played_details;
-typedef struct Guest_user_details
-{
-	char id[20];  //(primary key)
-	char name[50];
-	char date[20];
-}Guest_user_details;
+#include <iostream>
+#include <string>
+#include <vector>
 
+// Define structures for entities
+struct Player {
+    int playerId;
+    std::string name;
+    std::string registrationDate;
+    // Structure to store game details for each player
+    // You can expand this as needed.
+    // For simplicity, let's assume gameId, scores, and prizes are integers.
+    struct GameDetails {
+        int gameId;
+        int scores;
+        int prizes;
+    };
+    std::vector<GameDetails> gamesPlayed;
+    std::vector<std::string> gamePreferences;
+};
 
-void intialize_player_information(struct player_information pi[file_size])
-{
-	int i;
-	for (i=0;i<file_size;i++)
-	{
-		pi[i].player_id[10]='\0';
-		pi[i].name[50]='\0';
-		pi[i].registration_date.dd=0;
-		pi[i].registration_date.mm=0;
-		pi[i].registration_date.yyyy=0;
-		pi[i].no_of_players=0;
-		pi[i].game_preferences[50]='\0';
-		pi[i].gamesplayed =0;
-		pi[i].gameswon =0;
-		pi[i].scores =0;
-		pi[i].prizes=0;
-	}
-}
-//initialization
-void intialize_game_master_details(struct game_master_details gmd[file_size])
-{
-	int k;
-	for (k=0;k<file_size;k++)
-	{
-		gmd[k].game_id[10]='\0';
-		gmd[k].name[50]='\0';
-		gmd[k].type[20]='\0';
-		gmd[k].no_of_players=0;
-		
-	}
-	
-}
-void intialize_games_played_details(struct games_played_details gpd[file_size])
-{
-	int l;
-	for (l=0;l<file_size;l++)
-	{
-		gpd[l].game_id[20]='\0';
-		gpd[l].player_id[10]='\0';
-		gpd[l].score=0;
-		gpd[l].awards=0;
-		gpd[l].active_days=0;
-		gpd[l].ddstart=0;
-		gpd[l].mmstart=0;
-		gpd[l].yyyystart=0;
-		gpd[l].ddend=0;
-		gpd[l].mmend=0;
-		gpd[l].yyyyend=0;
-		
-	}
-	
-}
-void intialize_Guest_user_details(struct Guest_user_details gud[file_size])
-{
-	int m;
-	for (m=0;m<file_size;m++)
-	{
-		gud[m].id[20]='\0';
-		gud[m].name[50]='\0';
-		gud[m].date[20]='\0';
-		
-	}
-}
-// adding a new user
-void add_newuser( struct player_information pi[file_size],int N)
-{
-	int i,n;
- 	printf("\n enter the number of new players :");
- 	scanf("%d",&n);
- 	
-	for(i=0;i<n;i++)
-    {
-    	printf("\n enetr the player ID:");
- 	    scanf("%s",&pi[i+N].player_id);
- 	
- 	    printf("\n enetr the name:");
- 	    scanf("%s",&pi[i+N].name);
- 	    
- 	    printf("\n enetr the registration date:");
- 	    scanf("%d %d %d",&pi[i+N].registration_date.dd,&pi[i+N].registration_date.mm,&pi[i+N].registration_date.yyyy);
- 	    
- 	    printf("\n enetr the no.of games played:");
- 	    scanf("%d",&pi[i+N].gamesplayed);
- 	    
- 	    printf("\n enetr the no.of games won:");
- 	    scanf("%d",&pi[i+N].gameswon);
- 	    
- 	    printf("\n enetr the score:");
- 	    scanf("%d",&pi[i+N].scores);
- 	    
- 	    printf("\n enetr the prizes:");
- 	    scanf("%d",&pi[i+N].prizes);
- 	    
- 	    printf("\n enetr the game preferences:");
- 	    scanf("%s",&pi[i+N].game_preferences);
- 	    
-	}
-	N=N+n;
+struct GameMaster {
+    int gameId;
+    std::string name;
+    std::string type;
+    int numPlayersRequired;
+};
 
-//updated data
-	
-	printf("the updater data is:");
-	for(i=0;i<N;i++)
-	{
-		printf("\n %s %d %d %s %s ",pi[i+N].player_id,pi[i+N].name,pi[i+N].registration_date.dd,pi[i+N].registration_date.mm,pi[i+N].gamesplayed );
-		print("\n The new user was added sucessfully");
-	}	
-}
-//search_active_user
-void search_active_user(struct player_information pi[],int count,int k)
-{
-	int i;
-	printf("Active users :-\n");
-    for( i=0;i<count;i++)
-	{
-        if(pi[i].gamesplayed>k)
-		{
-            printf("ID: P%d\t%s\n",pi[i].player_id,pi[i].name);
+struct GamesPlayed {
+    int gameId;
+    std::vector<int> playersId;
+    std::vector<int> scores;
+    std::vector<int> activeDays;
+    std::string startDate;
+    std::string endDate;
+};
+
+struct GuestUser {
+    int id;
+    std::string name;
+    std::string date;
+};
+
+// Arrays to store database records
+std::vector<Player> players;
+std::vector<GameMaster> games;
+std::vector<GamesPlayed> gamesHistory;
+std::vector<GuestUser> guests;
+
+// Helper functions
+Player* findPlayerById(int playerId) {
+    for (auto& player : players) {
+        if (player.playerId == playerId) {
+            return &player;
         }
     }
-
+    return nullptr;
 }
-//search_inactive_user
-void search_inactive_user(struct player_information pi[],int player_count,struct games_played_details gpd[],int game_count)
-{
-	int inactive_user[100];
-    int i,j,k,l,days;
-    int inactive_count=-1;
 
-    for( i=0;i<game_count;i++)
-	{
+GameMaster* findGameById(int gameId) {
+    for (auto& game : games) {
+        if (game.gameId == gameId) {
+            return &game;
+        }
+    }
+    return nullptr;
+}
 
-        for( j=0;j<gpd[i].ply_count;j++)
-		{
-            int d= abs((gpd[j].ddstart)-(gpd[j].ddend));
-			int m= abs((gpd[j].mmstart)-(gpd[j].mmend));
-			int y= abs((gpd[j].yyyystart)-(gpd[j].yyyyend));
-			days=d+30*m+365*y;
-             for( k=0;k<pi[i].no_of_players;k++)
-			 {
-                 if(games_played_details.active_days<days )
-				 {
-                     //check if usr is alredy noted or not
-                     if(inactive_count==-1)
-                        inactive_user[++inactive_count]=gpd[i].player_id[k];
-                    else{
-                        int flag=1;
-                        for( l=0;l<inactive_count&&flag;l++)
-						{
-                            if(gpd[i].player_id[k]==inactive_user[l])
-                                flag=0;
+
+
+// 1. Add/Update operations
+void addUser(const std::string& name, const std::string& registrationDate, const std::vector<std::string>& gamePreferences) {
+    int playerId = players.empty() ? 1 : players.back().playerId + 1;
+    players.push_back({playerId, name, registrationDate, {}, gamePreferences});
+}
+
+void updateGamePlayedDetails(int playerId, int gameId, int score, int activeDays) {
+    Player* player = findPlayerById(playerId);
+    if (!player) {
+        // If the player is not registered, make them a guest user.
+        guests.push_back({playerId, "Guest", ""}); // Assuming date is not available for guest users.
+        player = &guests.back();
+    }
+
+    player->gamesPlayed.push_back({gameId, score, 0, 0}); // Assuming prizes are not available at this point.
+
+    // Update active days for guest user
+    if (player == &guests.back()) {
+        Guests* guest = static_cast<GuestUser*>(player);
+        guest->date = "date"; // Update with actual date when the game is played.
+        if (activeDays > 15) {
+            // Guest user is playing for more than 15 days.
+            // Prevent further play until registration is complete.
+            return;
+        }
+    }
+}
+
+
+
+
+// 2. Search operations
+std::vector<int> findOtherPlayersForGame(int playerId, int gameId) {
+    std::vector<int> otherPlayers;
+    for (const auto& game : gamesHistory) {
+        if (game.gameId == gameId) {
+            for (int i = 0; i < game.playersId.size(); ++i) {
+                if (game.playersId[i] != playerId) {
+                    otherPlayers.push_back(game.playersId[i]);
+                }
+            }
+            break;
+        }
+    }
+    return otherPlayers;
+}
+
+std::vector<int> findInactiveUsersForGame(int gameId) {
+    std::vector<int> inactiveUsers;
+    for (const auto& game : gamesHistory) {
+        if (game.gameId == gameId && game.endDate.empty()) {
+            for (int i = 0; i < game.playersId.size(); ++i) {
+                Player* player = findPlayerById(game.playersId[i]);
+                if (player && player->registrationDate.empty()) {
+                    inactiveUsers.push_back(player->playerId);
+                }
+            }
+            break;
+        }
+    }
+    return inactiveUsers;
+}
+
+std::vector<Player> activeUsers(int k) {
+    std::vector<Player> activeUsersList;
+    for (const auto& player : players) {
+        int activeGames = 0;
+        for (const auto& game : player.gamesPlayed) {
+            if (game.prizes > 0) { // Assuming a non-zero prize means the game is active.
+                activeGames++;
+            }
+        }
+        if (activeGames > k) {
+            activeUsersList.push_back(player);
+        }
+    }
+    return activeUsersList;
+}
+
+
+
+
+// 3. Sorting operations
+
+
+
+bool compareGamesByPrizes(const GameMaster& game1, const GameMaster& game2) {
+    // Sort in descending order of prizes won by players
+    return game1.prizes > game2.prizes;
+}
+
+std::vector<GameMaster> gamesWithMostPrizes() {
+    std::vector<GameMaster> sortedGames = games;
+    std::sort(sortedGames.begin(), sortedGames.end(), compareGamesByPrizes);
+    return sortedGames;
+}
+
+bool compareGamesByActiveDays(const GamesPlayed& game1, const GamesPlayed& game2) {
+    // Sort in descending order of active days
+    return game1.activeDays > game2.activeDays;
+}
+
+std::vector<GameMaster> top5GamesByActiveDays() {
+    std::vector<GamesPlayed> activeGames;
+    for (const auto& game : gamesHistory) {
+        if (game.endDate.empty()) {
+            activeGames.push_back(game);
+        }
+    }
+    std::sort(activeGames.begin(), activeGames.end(), compareGamesByActiveDays);
+
+    std::vector<GameMaster> top5Games;
+    for (int i = 0; i < std::min(5, static_cast<int>(activeGames.size())); ++i) {
+        GameMaster* game = findGameById(activeGames[i].gameId);
+        if (game) {
+            top5Games.push_back(*game);
+        }
+    }
+    return top5Games;
+}
+
+
+std::vector<Player> getPlayersPlayingGame(int gameId) {
+    std::vector<Player> playersPlaying;
+    for (const auto& player : players) {
+        for (const auto& game : player.gamesPlayed) {
+            if (game.gameId == gameId && game.prizes > 0) { // Assuming a non-zero prize means the game is active.
+                playersPlaying.push_back(player);
+                break; // Assuming a player plays a game only once, so no need to check other games.
+            }
+        }
+    }
+    return playersPlaying;
+}
+
+
+
+
+// 4. Delete operation
+// Function to delete guest users who are active for more than 20 days
+void remove_guest(const std::string& currentDate) {
+    // Use the std::remove_if algorithm to remove guest users who are active for more than 20 days.
+    guests.erase(std::remove_if(guests.begin(), guests.end(), [&](const GuestUser& guest) {
+        for (const auto& game : gamesHistory) {
+            if (game.endDate.empty() && game.startDate <= currentDate && game.playersId.end() != std::find(game.playersId.begin(), game.playersId.end(), guest.id)) {
+                // Calculate the number of active days for the guest user in this game.
+                // For demonstration, I'll assume guest's start date as "2020-08-01".
+                int activeDays = 5; // Replace this with actual calculation.
+
+                if (activeDays > 20) {
+                    // Remove guest user from gamesHistory.
+                    for (auto& player : players) {
+                        if (player.playerId == guest.id) {
+                            for (auto it = player.gamesPlayed.begin(); it != player.gamesPlayed.end();) {
+                                if (it->gameId == game.gameId) {
+                                    it = player.gamesPlayed.erase(it);
+                                } else {
+                                    ++it;
+                                }
+                            }
+                            break;
                         }
-                        if(flag==1)
-                        inactive_user[++inactive_count]=gpd[i].player_id[k];
                     }
-
-                 }
-             }
+                    return true; // Remove guest from guests vector.
+                }
+            }
         }
-         printf("game_id: %d inactive user are :\n",i);
-        for( i=0;i<inactive_count;i++)
-		{
-            printf(" %s\n",pi[inactive_user[i]].name);
-        }
-    }
-  
-}	
-//Display_Details_G
-void Display_Details_G(struct player_information pi[],int count,int game)
-{
-	int i;
-    printf("\tplayers\tId\n");
-    for( i=0;i<count;i++)
-	{
-        
-        if(pi[i].game_id==game)
-		{
-        printf("Name: %s\tP%d\n",pi[i].name,pi[i],i);
-                
-        }
-        
-
-    }
-}
-//Sorting_mostprizes
-void Sorting_mostprizes(struct game_master_details games[] ,int count,struct games_played_details play[],int play_counter)
-{
-	int n;
-	int i, j, max, id = 0;
-	printf("Enter n:");
-	scanf("%d",&n);
-    struct game_master;games[20];
-	for(i=0;i<n;i++)
-	{
-		printf("Enter game master details:%d\n",i+1);
-		printf("Enter id:");
-		scanf("%d",&games[i].game_id);
-		printf("Enter name:");
-		scanf("%s",games[i].name);
-		printf("Enter type:");
-		scanf("%s",games[i].type);
-		printf("Enter no.of players required:");
-		scanf("%d",&games[i].no_of_players);
-	}
-	
-	int gmaster[count];
-	
-	for(i=0; i<count; i++){
-		gmaster[i] = 0;
-		for(j=0; j<play_counter; j++)
-		{
-			if(play[j].game_id == i){
-				if(strcmp(play[j].awards, "none") != 0)
-				{
-					gmaster[i] ++; 
-				}
-			}
-		}
-	}
-	max=gmaster[0];
-	for(i=1; i<count; i++){
-		if(max < gmaster[i])
-		{
-			max = gmaster[i];
-			id = i;
-		}
-	}
-	
-	printf("Maximum prizes are in %s", games[id].name);
-}
-//bubbleSort
-void bubbleSort(int a[][2], int n,int p)
-{
-    int i, j;
-    int q=(n>p+1)?p+1:n;
-    for (i = 0; i < q-1; i++)  
-	{  
-      for (j = 0; j < n-i-1; j++)
-       { 
-           if (a[j][0] > a[j+1][0])
-            swap(&a[j][0], &a[j+1][0]);
-       }
-    }
+        return false; // Do not remove guest from guests vector.
+    }), guests.end());
 }
 
-//top_5games
-void top_5games(struct games_played_details gpd[],int game_count)
-{
-
-       int d[50][2];
-       int data[20][0];
-       int i,j,days=0;
-       for(i=0;i<game_count;i++)
-	   {
-           for(j=0;j<gpd[i].ply_count;j++)
-		   {
-               
-                   int d= abs((gpd[j].ddstart)-(gpd[j].ddend));
-				   int m= abs((gpd[j].mmstart)-(gpd[j].mmend));
-				   int y= abs((gpd[j].yyyystart)-(gpd[j].yyyyend));
-				   days+=d+30*m+365*y+1;
-           }
-           data[i][0]=days;
-           data[i][1]=i;
-       }
-      bubbleSort(d,50,5);
-      for( i=game_count-1;i>game_count-1-5;i--)
-        printf("Game_id: %d  days: %d\n",data[i][1],data[i][0]);
 
 
-}
-//remove_guest
-void remove_guest(struct games_played_details gpd[],struct Guest_user_details gud[])
-{
-	int d,m,y,total,a;
-	char id[20];
-	printf("enter guest user no in list:");
-	scanf("%d",&a);
-	
-	d= abs((gpd[a].ddstart)-(gpd[a].ddend));
-	m= abs((gpd[a].mmstart)-(gpd[a].mmend));
-	y= abs((gpd[a].yyyystart)-(gpd[a].yyyyend));
-	total=d+30*m+365*y;
-	if(total>20)
-	{
-		gpd[m].player_id[20]='\0';
-		gud[m].name[50]='\0';
-		gud[m].date[20]='\0';
-		
-	}
-	
-}
-int main()
-{
-	int ch,ch1,ch2;
-    printf("\n 1.Add_user");
-        printf("\n 2.Search");
-        printf("\n 3.Sorting");
-        printf("\n 4.Delete ");
-        printf("\n 0.Exit");
+int main() {
+    int ch, ch1, ch2;
+    while (true) {
+        std::cout << "\n1. Add_user";
+        std::cout << "\n2. Search";
+        std::cout << "\n3. Sorting";
+        std::cout << "\n4. Delete";
+        std::cout << "\n0. Exit";
 
-        printf("\n Enter your choice :");
-        scanf("%d",&ch);
+        std::cout << "\n\nEnter your choice: ";
+        std::cin >> ch;
 
-        while (ch>0)
-		{
-          if(ch==1)
-          {
-            add_newuser();
-		  }
-          
-          if(ch==2)
-          {
-          	printf("\n Enter your choice :");
-             scanf("%d",&ch1);
-             switch (ch1)
-             {
-             	case 1:
-             		search_inactive_user();
-             		break;
-             	case 2:
-             		search_active_user();
-             		break;
-			 }
-          
-		  }
-           if(ch==3)
-           {
-           	printf("\n Enter your choice :");
-             scanf("%d",&ch2);
-             switch (ch2)
-             {
-             	case 1:
-             		Sorting_mostprizes();
-             		break;
-             	case 2:
-             		top_5games();
-             	case 3:
-             		Display_Details_G();
-             		break;
-			 }
-          
-		   }
-          if(ch==4)
-          {
-          	remove_guest();
-		  }
-          
-          if(ch==0)
-          {
-          	break;
-		  }
+        switch (ch) {
+            case 1:
+                int playerId;
+   		 std::string name, registrationDate;
+   		 std::vector<std::string> gamePreferences;
+
+   		 std::cout << "Enter Player ID: ";
+   		 std::cin >> playerId;
+
+    		std::cout << "Enter Player Name: ";
+   		std::cin.ignore();
+    		std::getline(std::cin, name);
+
+    		std::cout << "Enter Registration Date (YYYY-MM-DD): ";
+    		std::cin >> registrationDate;
+
+   		 std::cout << "Enter Game Preferences (comma-separated): ";
+    		std::cin.ignore();
+    		std::string preferences;
+   		 std::getline(std::cin, preferences);
+   		 size_t pos = 0;
+    		while ((pos = preferences.find(',')) != std::string::npos) {
+        	gamePreferences.push_back(preferences.substr(0, pos));
+        	preferences.erase(0, pos + 1);
+    		}
+    		gamePreferences.push_back(preferences);
+
+    		// Call the actual function to add the user with the collected input
+
+
+    		addUser(playerId, name, registrationDate, gamePreferences);
+
+
+                break;
+            case 2:
+                std::cout << "\n1. SearchfindOtherPlayersForGame";
+                std::cout << "\n2. Search findInactiveUsersForGame";
+		std::cout << "\n3. Search activeUsers";
+                std::cout << "\nEnter your choice: ";
+                std::cin >> ch1;
+                switch (ch1) {
+                    case 1:
+			cout<<"provide game id and player id";
+			int gameid,player id;
+			cin>>gameid >> player id;
+                        SearchfindOtherPlayersForGame(playerid,gameid);
+                        break;
+		    case 2:
+			cout<<"provide gameid";
+			int gameid;
+			cin>>gameid;
+			findInactiveUsersForGame(gameid);
+			break;
+                    case 3:
+			cout<<"provide the games number";		
+			int k;
+			cin>>k;
+                        search_active_user(k);
+                        break;
+                    default:
+                        std::cout << "\nInvalid choice for search operation.";
+                        break;
+                }
+                break;
+            case 3:
+                std::cout << "\n1. Sorting Games by Most Prizes";
+                std::cout << "\n2. Top 5 Games by Active Days";
+                std::cout << "\n3. Display Player Details for Game";
+                std::cout << "\nEnter your choice: ";
+                std::cin >> ch2;
+                switch (ch2) {
+                    case 1:
+                        Sorting_mostprizes();
+                        break;
+                    case 2:
+                        top_5games();
+                        break;
+                    case 3:
+                        int gameId;
+                        std::cout << "\nEnter Game ID: ";
+                        std::cin >> gameId;
+                        Display_Details_G(gameId);
+                        break;
+                    default:
+                        std::cout << "\nInvalid choice for sorting operation.";
+                        break;
+                }
+                break;
+            case 4:
+                std::cout << "Enter the current date (YYYY-MM-DD): ";
+                std::string currentDate;
+                std::cin >> currentDate;
+                remove_guest(currentDate);
+                break;
+            case 0:
+                return 0;
+            default:
+                std::cout << "\nInvalid choice.";
+                break;
         }
     }
-        
-    
+
     return 0;
 }
-
